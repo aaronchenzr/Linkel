@@ -54,6 +54,10 @@ class AddLinkActivity : AppCompatActivity() {
         val url = binding.etUrl.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
 
+        if (username.isBlank()) {
+            Toast.makeText(this, "No username set — open the main app first", Toast.LENGTH_LONG).show()
+            return
+        }
         if (title.isBlank()) {
             binding.etTitle.error = "Title is required"
             return
@@ -61,6 +65,13 @@ class AddLinkActivity : AppCompatActivity() {
         if (url.isBlank()) {
             binding.etUrl.error = "URL is required"
             return
+        }
+
+        // Ensure URL has a scheme so the server's URL validation passes
+        val normalizedUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            "https://$url"
+        } else {
+            url
         }
 
         binding.btnSubmit.isEnabled = false
@@ -71,7 +82,7 @@ class AddLinkActivity : AppCompatActivity() {
                     NewLink(
                         username = username,
                         title = title,
-                        url = url,
+                        url = normalizedUrl,
                         description = description.ifBlank { null }
                     )
                 )
