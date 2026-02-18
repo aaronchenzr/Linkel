@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linkel — Share Links</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1 class="logo">Linkel</h1>
+      <p class="tagline">Share links, build a timeline.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- Username bar -->
+    <section class="user-bar" id="userBar">
+      <div class="user-bar-inner">
+        <label for="usernameInput">Your name:</label>
+        <input
+          type="text"
+          id="usernameInput"
+          placeholder="e.g. alice"
+          maxlength="32"
+          autocomplete="off"
+        />
+        <button id="setUsernameBtn">Set</button>
+        <span id="currentUser" class="current-user hidden"></span>
+        <button id="changeUserBtn" class="link-btn hidden">Change</button>
+      </div>
+    </section>
+
+    <!-- Submit form -->
+    <section class="submit-section hidden" id="submitSection">
+      <h2>Share a Link</h2>
+      <form id="linkForm">
+        <div class="form-group">
+          <label for="titleInput">Title <span class="required">*</span></label>
+          <input type="text" id="titleInput" placeholder="Link title" maxlength="200" required />
+        </div>
+        <div class="form-group">
+          <label for="urlInput">URL <span class="required">*</span></label>
+          <input type="url" id="urlInput" placeholder="https://example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="descInput">Description</label>
+          <textarea id="descInput" placeholder="Optional short description…" maxlength="500" rows="2"></textarea>
+        </div>
+        <div id="formError" class="form-error hidden"></div>
+        <button type="submit" id="submitBtn">Share Link</button>
+      </form>
+    </section>
+
+    <!-- Timeline controls -->
+    <section class="timeline-controls">
+      <h2>Timeline</h2>
+      <div class="controls-row">
+        <div class="sort-group">
+          <label for="sortOrder">Order:</label>
+          <select id="sortOrder">
+            <option value="desc">Newest first</option>
+            <option value="asc">Oldest first</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterUser">Filter by user:</label>
+          <input type="text" id="filterUser" placeholder="all users" />
+          <button id="filterBtn">Filter</button>
+          <button id="clearFilterBtn" class="link-btn">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Links timeline -->
+    <section class="timeline" id="timeline">
+      <div id="linksList"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <p>No links yet. Be the first to share one!</p>
+      </div>
+      <div id="loadingState" class="loading-state">Loading…</div>
+    </section>
+  </main>
+
+  <!-- Delete confirmation modal -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <p>Delete this link?</p>
+      <div class="modal-actions">
+        <button id="confirmDelete" class="danger-btn">Delete</button>
+        <button id="cancelDelete">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
