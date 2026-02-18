@@ -15,9 +15,12 @@ A minimal link sharing app with a chronological timeline.
 
 - **Backend**: Node.js + Express
 - **Database**: SQLite via `better-sqlite3`
-- **Frontend**: Vanilla HTML / CSS / JavaScript
+- **Web frontend**: Vanilla HTML / CSS / JavaScript
+- **Android app**: Kotlin, Retrofit, RecyclerView, Material Design 3
 
 ## Getting started
+
+### Web
 
 ```bash
 npm install
@@ -25,6 +28,20 @@ npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+### Android
+
+Open the `android/` folder in Android Studio (Hedgehog or newer). The app talks to the backend via the `BASE_URL` build config field.
+
+- **Emulator**: default URL is `http://10.0.2.2:3000/` (routes to host loopback)
+- **Physical device**: change `BASE_URL` in `android/app/build.gradle` to your machine's LAN IP, e.g. `http://192.168.1.x:3000/`
+
+Build and run from Android Studio, or:
+
+```bash
+cd android
+./gradlew assembleDebug
+```
 
 ## API
 
