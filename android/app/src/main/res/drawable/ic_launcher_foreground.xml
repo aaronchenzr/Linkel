@@ -4,11 +4,16 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Chain link icon representing Linkel -->
+    <!-- Left link ring -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M45,54 A12,12 0 0,1 57,42 L66,42 A12,12 0 0,1 78,54 A12,12 0 0,1 66,66 L63,66 L63,60 L66,60 A6,6 0 0,0 72,54 A6,6 0 0,0 66,48 L57,48 A6,6 0 0,0 51,54 Z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:pathData="M28,45 L28,45 Q28,30 43,30 L55,30 Q70,30 70,45 L70,45 Q70,60 55,60 L48,60" />
+    <!-- Right link ring -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M63,54 A12,12 0 0,1 51,66 L42,66 A12,12 0 0,1 30,54 A12,12 0 0,1 42,42 L45,42 L45,48 L42,48 A6,6 0 0,0 36,54 A6,6 0 0,0 42,60 L51,60 A6,6 0 0,0 57,54 Z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:pathData="M60,48 L65,48 Q80,48 80,63 L80,63 Q80,78 65,78 L53,78 Q38,78 38,63 L38,63 Q38,48 53,48 L60,48" />
 </vector>
