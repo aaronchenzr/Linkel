@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Chain link icon representing Linkel -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,54 A12,12 0 0,1 57,42 L66,42 A12,12 0 0,1 78,54 A12,12 0 0,1 66,66 L63,66 L63,60 L66,60 A6,6 0 0,0 72,54 A6,6 0 0,0 66,48 L57,48 A6,6 0 0,0 51,54 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M63,54 A12,12 0 0,1 51,66 L42,66 A12,12 0 0,1 30,54 A12,12 0 0,1 42,42 L45,42 L45,48 L42,48 A6,6 0 0,0 36,54 A6,6 0 0,0 42,60 L51,60 A6,6 0 0,0 57,54 Z" />
+</vector>
