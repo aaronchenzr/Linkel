@@ -75,33 +75,37 @@ class LinkAdapter(
     }
 
     /** Return the host portion of [url], stripping a leading "www." if present. */
-    private fun extractDomain(url: String): String = try {
-        val host = Uri.parse(url).host ?: return url
-        host.removePrefix("www.")
-    } catch (_: Exception) {
-        url
+    private fun extractDomain(url: String): String {
+        return try {
+            val host = Uri.parse(url).host ?: return url
+            host.removePrefix("www.")
+        } catch (_: Exception) {
+            url
+        }
     }
 
     /**
      * Convert a SQLite timestamp ("2024-05-10 14:32:00") to a human-friendly
      * relative string: "just now", "5m ago", "3h ago", "2d ago", or "May 10".
      */
-    private fun relativeTime(raw: String): String = try {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-        val date: Date = sdf.parse(raw) ?: return raw
-        val diffMs = Date().time - date.time
-        val mins = TimeUnit.MILLISECONDS.toMinutes(diffMs)
-        val hours = TimeUnit.MILLISECONDS.toHours(diffMs)
-        val days = TimeUnit.MILLISECONDS.toDays(diffMs)
-        when {
-            mins < 1   -> "just now"
-            mins < 60  -> "${mins}m ago"
-            hours < 24 -> "${hours}h ago"
-            days < 7   -> "${days}d ago"
-            else       -> SimpleDateFormat("MMM d", Locale.US).format(date)
+    private fun relativeTime(raw: String): String {
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            val date: Date = sdf.parse(raw) ?: return raw
+            val diffMs = Date().time - date.time
+            val mins = TimeUnit.MILLISECONDS.toMinutes(diffMs)
+            val hours = TimeUnit.MILLISECONDS.toHours(diffMs)
+            val days = TimeUnit.MILLISECONDS.toDays(diffMs)
+            when {
+                mins < 1   -> "just now"
+                mins < 60  -> "${mins}m ago"
+                hours < 24 -> "${hours}h ago"
+                days < 7   -> "${days}d ago"
+                else       -> SimpleDateFormat("MMM d", Locale.US).format(date)
+            }
+        } catch (_: Exception) {
+            raw
         }
-    } catch (_: Exception) {
-        raw
     }
 
     companion object {
