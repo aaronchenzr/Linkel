@@ -1,5 +1,7 @@
 package com.linkel.app
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +18,8 @@ class AddLinkActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_USERNAME = "extra_username"
+        private const val PREFS = "linkel_prefs"
+        private const val KEY_USERNAME = "username"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,11 +27,24 @@ class AddLinkActivity : AppCompatActivity() {
         binding = ActivityAddLinkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        username = intent.getStringExtra(EXTRA_USERNAME) ?: ""
+        // Username may come from MainActivity via EXTRA_USERNAME, or fall back to
+        // SharedPreferences when this activity is launched via a share intent.
+        username = intent.getStringExtra(EXTRA_USERNAME)
+            ?: getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_USERNAME, "") ?: ""
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = "Share a Link"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Pre-fill fields when launched from a share intent (ACTION_SEND)
+        if (intent.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            val sharedSubject = intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
+            // The shared text is usually the URL; subject is often the page title
+            if (sharedText.isNotBlank()) binding.etUrl.setText(sharedText)
+            if (sharedSubject.isNotBlank()) binding.etTitle.setText(sharedSubject)
+        }
 
         binding.btnSubmit.setOnClickListener { submitLink() }
     }
