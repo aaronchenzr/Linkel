@@ -391,9 +391,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .link-preview {
+  display: block;
   margin-top: 0.6rem;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.link-preview:hover {
+  border-color: var(--accent);
 }
 
 .link-preview img {
@@ -401,6 +409,15 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   width: 100%;
   max-height: 240px;
   object-fit: cover;
+}
+
+.link-preview-site {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--bg);
 }
 
 .delete-btn {

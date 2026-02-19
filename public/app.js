@@ -155,9 +155,15 @@ function renderCard(link) {
     ? `<p class="link-desc">${escapeHtml(link.description)}</p>`
     : '';
 
-  const previewHtml = link.preview_image
-    ? `<div class="link-preview"><img src="${escapeHtml(link.preview_image)}" alt="" loading="lazy"></div>`
-    : '';
+  let previewHtml = '';
+  if (link.preview_image) {
+    const domain = new URL(link.url).hostname.replace(/^www\./, '');
+    previewHtml = `
+      <a class="link-preview" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
+        <img src="${escapeHtml(link.preview_image)}" alt="" loading="lazy">
+        <span class="link-preview-site">${escapeHtml(domain)}</span>
+      </a>`;
+  }
 
   return `
     <div class="link-card" data-id="${link.id}">
