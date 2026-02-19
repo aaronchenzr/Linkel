@@ -33,6 +33,7 @@ class LinkAdapter(
         val tvTimestamp: TextView = view.findViewById(R.id.tvTimestamp)
         val btnDelete: ImageButton = view.findViewById(R.id.btnDelete)
         val ivPreview: ImageView = view.findViewById(R.id.ivPreview)
+        val tvPreviewTitle: TextView = view.findViewById(R.id.tvPreviewTitle)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -75,6 +76,14 @@ class LinkAdapter(
             }
         } else {
             holder.ivPreview.visibility = View.GONE
+        }
+
+        // Website title from og:title — shown below preview image
+        if (!link.previewTitle.isNullOrBlank()) {
+            holder.tvPreviewTitle.visibility = View.VISIBLE
+            holder.tvPreviewTitle.text = link.previewTitle
+        } else {
+            holder.tvPreviewTitle.visibility = View.GONE
         }
 
         // Show domain name instead of the raw URL to keep cards tidy

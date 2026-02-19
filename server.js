@@ -16,20 +16,20 @@ db.exec(`
     url TEXT NOT NULL,
     description TEXT,
     preview_image TEXT,
+    preview_title TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
 
-// Migrate existing databases that lack the preview_image column
-try {
-  db.exec('ALTER TABLE links ADD COLUMN preview_image TEXT');
-} catch (_) { /* column already exists */ }
+// Migrate existing databases that lack new columns
+try { db.exec('ALTER TABLE links ADD COLUMN preview_image TEXT'); } catch (_) {}
+try { db.exec('ALTER TABLE links ADD COLUMN preview_title TEXT'); } catch (_) {}
 
 /**
- * Fetch the og:image meta tag from a URL.
- * Returns the image URL string, or null on any failure.
+ * Fetch og:image and og:title meta tags from a URL.
+ * Returns { image, title } with string values or nulls.
  */
-async function fetchOgImage(url) {
+async function fetchOgMeta(url) {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
@@ -42,17 +42,31 @@ async function fetchOgImage(url) {
       }
     });
     clearTimeout(timeout);
-    if (!res.ok) return null;
-    // Only scan the first 50 KB — og:image is always in <head>
+    if (!res.ok) return { image: null, title: null };
+    // Only scan the first 50 KB — og meta tags are always in <head>
     const html = (await res.text()).substring(0, 50000);
-    // Match meta tags that carry property="og:image" (or name="og:image")
-    for (const m of html.matchAll(/<meta\s[^>]*?(?:property|name)\s*=\s*["']og:image["'][^>]*?>/gi)) {
+
+    let image = null;
+    let title = null;
+
+    for (const m of html.matchAll(/<meta\s[^>]*?(?:property|name)\s*=\s*["']og:(image|title)["'][^>]*?>/gi)) {
+      const which = m[1].toLowerCase();
       const content = m[0].match(/content\s*=\s*["']([^"']+)["']/i);
-      if (content) return content[1];
+      if (!content) continue;
+      if (which === 'image' && !image) image = content[1];
+      if (which === 'title' && !title) title = content[1];
+      if (image && title) break;
     }
-    return null;
+
+    // Fallback: use <title> if no og:title found
+    if (!title) {
+      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+      if (titleMatch) title = titleMatch[1].trim();
+    }
+
+    return { image, title };
   } catch (_) {
-    return null;
+    return { image: null, title: null };
   }
 }
 
@@ -102,10 +116,11 @@ app.post('/api/links', (req, res) => {
   const link = db.prepare('SELECT * FROM links WHERE id = ?').get(linkId);
   res.status(201).json(link);
 
-  // Fetch og:image in the background and persist it so it appears on next load
-  fetchOgImage(url.trim()).then(previewImage => {
-    if (previewImage) {
-      db.prepare('UPDATE links SET preview_image = ? WHERE id = ?').run(previewImage, linkId);
+  // Fetch og metadata in the background and persist it so it appears on next load
+  fetchOgMeta(url.trim()).then(({ image, title }) => {
+    if (image || title) {
+      db.prepare('UPDATE links SET preview_image = ?, preview_title = ? WHERE id = ?')
+        .run(image, title, linkId);
     }
   });
 });

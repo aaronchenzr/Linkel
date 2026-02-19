@@ -108,6 +108,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDescription" />
 
+        <!-- Website title from og:title (shown below preview image) -->
+        <TextView
+            android:id="@+id/tvPreviewTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivPreview" />
+
         <!-- Domain badge ("🔗 example.com") -->
         <TextView
             android:id="@+id/tvUrl"
@@ -120,7 +136,7 @@
             android:ellipsize="end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivPreview"
+            app:layout_constraintTop_toBottomOf="@id/tvPreviewTitle"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

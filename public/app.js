@@ -156,12 +156,21 @@ function renderCard(link) {
     : '';
 
   let previewHtml = '';
-  if (link.preview_image) {
+  if (link.preview_image || link.preview_title) {
     const domain = new URL(link.url).hostname.replace(/^www\./, '');
+    const imgHtml = link.preview_image
+      ? `<img src="${escapeHtml(link.preview_image)}" alt="" loading="lazy">`
+      : '';
+    const titleHtml = link.preview_title
+      ? `<span class="link-preview-title">${escapeHtml(link.preview_title)}</span>`
+      : '';
     previewHtml = `
       <a class="link-preview" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
-        <img src="${escapeHtml(link.preview_image)}" alt="" loading="lazy">
-        <span class="link-preview-site">${escapeHtml(domain)}</span>
+        ${imgHtml}
+        <div class="link-preview-info">
+          ${titleHtml}
+          <span class="link-preview-site">${escapeHtml(domain)}</span>
+        </div>
       </a>`;
   }
 
