@@ -150,4 +150,18 @@ app.delete('/api/links/:id', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Linkel running at http://0.0.0.0:${PORT}`);
+
+  // Backfill: fetch missing og metadata for existing links
+  const stale = db.prepare(
+    'SELECT id, url FROM links WHERE preview_title IS NULL'
+  ).all();
+  for (const row of stale) {
+    fetchOgMeta(row.url).then(({ image, title }) => {
+      if (image || title) {
+        db.prepare(
+          'UPDATE links SET preview_image = COALESCE(preview_image, ?), preview_title = ? WHERE id = ?'
+        ).run(image, title, row.id);
+      }
+    });
+  }
 });
