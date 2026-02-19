@@ -15,9 +15,39 @@ db.exec(`
     title TEXT NOT NULL,
     url TEXT NOT NULL,
     description TEXT,
+    preview_image TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
+
+// Migrate existing databases that lack the preview_image column
+try {
+  db.exec('ALTER TABLE links ADD COLUMN preview_image TEXT');
+} catch (_) { /* column already exists */ }
+
+/**
+ * Fetch the og:image meta tag from a URL.
+ * Returns the image URL string, or null on any failure.
+ */
+async function fetchOgImage(url) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Linkelbot/1.0 link-preview-fetcher' }
+    });
+    clearTimeout(timeout);
+    const html = await res.text();
+    // Match either attribute order: property="og:image" content="..." or content="..." property="og:image"
+    const match =
+      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    return match ? match[1] : null;
+  } catch (_) {
+    return null;
+  }
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -60,9 +90,17 @@ app.post('/api/links', (req, res) => {
     'INSERT INTO links (username, title, url, description) VALUES (?, ?, ?, ?)'
   );
   const result = stmt.run(username, title.trim(), url.trim(), description?.trim() || null);
+  const linkId = result.lastInsertRowid;
 
-  const link = db.prepare('SELECT * FROM links WHERE id = ?').get(result.lastInsertRowid);
+  const link = db.prepare('SELECT * FROM links WHERE id = ?').get(linkId);
   res.status(201).json(link);
+
+  // Fetch og:image in the background and persist it so it appears on next load
+  fetchOgImage(url.trim()).then(previewImage => {
+    if (previewImage) {
+      db.prepare('UPDATE links SET preview_image = ? WHERE id = ?').run(previewImage, linkId);
+    }
+  });
 });
 
 // DELETE /api/links/:id - delete a link (only by the submitting user)

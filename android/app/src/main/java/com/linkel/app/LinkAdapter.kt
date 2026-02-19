@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.linkel.app.api.Link
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -30,6 +32,7 @@ class LinkAdapter(
         val tvDescription: TextView = view.findViewById(R.id.tvDescription)
         val tvTimestamp: TextView = view.findViewById(R.id.tvTimestamp)
         val btnDelete: ImageButton = view.findViewById(R.id.btnDelete)
+        val ivPreview: ImageView = view.findViewById(R.id.ivPreview)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,6 +65,16 @@ class LinkAdapter(
         } else {
             holder.tvDescription.visibility = View.VISIBLE
             holder.tvDescription.text = link.description
+        }
+
+        // Preview image from og:image — shown only when the server has fetched it
+        if (!link.previewImage.isNullOrBlank()) {
+            holder.ivPreview.visibility = View.VISIBLE
+            holder.ivPreview.load(link.previewImage) {
+                crossfade(true)
+            }
+        } else {
+            holder.ivPreview.visibility = View.GONE
         }
 
         // Show domain name instead of the raw URL to keep cards tidy

@@ -8,6 +8,7 @@ data class Link(
     val title: String,
     val url: String,
     val description: String?,
+    @SerializedName("preview_image") val previewImage: String?,
     @SerializedName("created_at") val createdAt: String
 )
 
