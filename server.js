@@ -35,15 +35,23 @@ async function fetchOgImage(url) {
     const timeout = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(url, {
       signal: controller.signal,
-      headers: { 'User-Agent': 'Linkelbot/1.0 link-preview-fetcher' }
+      redirect: 'follow',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Linkelbot/1.0)',
+        'Accept': 'text/html'
+      }
     });
     clearTimeout(timeout);
     const html = await res.text();
-    // Match either attribute order: property="og:image" content="..." or content="..." property="og:image"
-    const match =
-      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-    return match ? match[1] : null;
+    // Find all <meta> tags and look for og:image property
+    const metaTags = html.matchAll(/<meta\s([^>]+?)\/?>/gi);
+    for (const m of metaTags) {
+      const attrs = m[1];
+      if (!/property\s*=\s*["']og:image["']/i.test(attrs)) continue;
+      const content = attrs.match(/content\s*=\s*["']([^"']+)["']/i);
+      if (content) return content[1];
+    }
+    return null;
   } catch (_) {
     return null;
   }

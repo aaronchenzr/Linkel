@@ -390,6 +390,19 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   word-break: break-word;
 }
 
+.link-preview {
+  margin-top: 0.6rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.link-preview img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+}
+
 .delete-btn {
   background: none;
   color: var(--muted);

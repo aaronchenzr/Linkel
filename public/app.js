@@ -155,6 +155,10 @@ function renderCard(link) {
     ? `<p class="link-desc">${escapeHtml(link.description)}</p>`
     : '';
 
+  const previewHtml = link.preview_image
+    ? `<div class="link-preview"><img src="${escapeHtml(link.preview_image)}" alt="" loading="lazy"></div>`
+    : '';
+
   return `
     <div class="link-card" data-id="${link.id}">
       <div class="link-dot"></div>
@@ -178,6 +182,7 @@ function renderCard(link) {
           </a>
         </div>
         ${descHtml}
+        ${previewHtml}
       </div>
     </div>
   `;
