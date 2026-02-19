@@ -32,23 +32,22 @@ try {
 async function fetchOgImage(url) {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
     const res = await fetch(url, {
       signal: controller.signal,
       redirect: 'follow',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Linkelbot/1.0)',
-        'Accept': 'text/html'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
       }
     });
     clearTimeout(timeout);
-    const html = await res.text();
-    // Find all <meta> tags and look for og:image property
-    const metaTags = html.matchAll(/<meta\s([^>]+?)\/?>/gi);
-    for (const m of metaTags) {
-      const attrs = m[1];
-      if (!/property\s*=\s*["']og:image["']/i.test(attrs)) continue;
-      const content = attrs.match(/content\s*=\s*["']([^"']+)["']/i);
+    if (!res.ok) return null;
+    // Only scan the first 50 KB — og:image is always in <head>
+    const html = (await res.text()).substring(0, 50000);
+    // Match meta tags that carry property="og:image" (or name="og:image")
+    for (const m of html.matchAll(/<meta\s[^>]*?(?:property|name)\s*=\s*["']og:image["'][^>]*?>/gi)) {
+      const content = m[0].match(/content\s*=\s*["']([^"']+)["']/i);
       if (content) return content[1];
     }
     return null;
