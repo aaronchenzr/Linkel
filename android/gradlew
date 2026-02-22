@@ -116,6 +116,20 @@ CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
 # Determine the Java command to use to start the JVM.
+if [ -z "$JAVA_HOME" ] ; then
+    # Auto-detect JAVA_HOME on common platforms
+    if [ -x "/usr/libexec/java_home" ] ; then
+        # macOS
+        JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null) || true
+    elif [ -d "/usr/lib/jvm/default-java" ] ; then
+        JAVA_HOME=/usr/lib/jvm/default-java
+    elif [ -d "/usr/lib/jvm/java-21-openjdk-amd64" ] ; then
+        JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+    elif [ -d "/usr/lib/jvm/java-17-openjdk-amd64" ] ; then
+        JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    fi
+fi
+
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
         # IBM's JDK on AIX uses strange locations for the executables
