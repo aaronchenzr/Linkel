@@ -15,9 +15,43 @@ db.exec(`
     title TEXT NOT NULL,
     url TEXT NOT NULL,
     description TEXT,
+    site_title TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
+
+// Add site_title column if it doesn't exist (migration for existing databases)
+try {
+  db.exec('ALTER TABLE links ADD COLUMN site_title TEXT');
+} catch {
+  // Column already exists – ignore
+}
+
+// ---- Fetch website title helper ----
+async function fetchSiteTitle(url) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Linkel/1.0 (link preview)' },
+      redirect: 'follow',
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) return null;
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('text/html')) return null;
+
+    const html = await res.text();
+    const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    return match ? match[1].trim().replace(/\s+/g, ' ') : null;
+  } catch {
+    return null;
+  }
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -42,7 +76,7 @@ app.get('/api/links', (req, res) => {
 });
 
 // POST /api/links - submit a new link
-app.post('/api/links', (req, res) => {
+app.post('/api/links', async (req, res) => {
   const { username, title, url, description } = req.body;
 
   if (!username || !title || !url) {
@@ -56,13 +90,33 @@ app.post('/api/links', (req, res) => {
     return res.status(400).json({ error: 'Invalid URL format' });
   }
 
+  const siteTitle = await fetchSiteTitle(url.trim());
+
   const stmt = db.prepare(
-    'INSERT INTO links (username, title, url, description) VALUES (?, ?, ?, ?)'
+    'INSERT INTO links (username, title, url, description, site_title) VALUES (?, ?, ?, ?, ?)'
   );
-  const result = stmt.run(username, title.trim(), url.trim(), description?.trim() || null);
+  const result = stmt.run(username, title.trim(), url.trim(), description?.trim() || null, siteTitle);
 
   const link = db.prepare('SELECT * FROM links WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(link);
+});
+
+// GET /api/fetch-title - fetch the <title> of a URL
+app.get('/api/fetch-title', async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ error: 'url query parameter is required' });
+  }
+
+  try {
+    new URL(url);
+  } catch {
+    return res.status(400).json({ error: 'Invalid URL format' });
+  }
+
+  const siteTitle = await fetchSiteTitle(url);
+  res.json({ site_title: siteTitle });
 });
 
 // DELETE /api/links/:id - delete a link (only by the submitting user)
