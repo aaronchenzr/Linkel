@@ -88,6 +88,6 @@ app.delete('/api/links/:id', (req, res) => {
   res.json({ message: 'Link deleted' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Linkel running at http://localhost:${PORT}`);
 });
