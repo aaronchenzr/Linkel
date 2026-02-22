@@ -36,6 +36,12 @@ Open the `android/` folder in Android Studio (Hedgehog or newer). The app talks 
 - **Emulator**: default URL is `http://10.0.2.2:3000/` (routes to host loopback)
 - **Physical device**: change `BASE_URL` in `android/app/build.gradle` to your machine's LAN IP, e.g. `http://192.168.1.x:3000/`
 
+Make sure `JAVA_HOME` is set (or let `gradle.properties` handle it):
+
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64  # Linux example
+```
+
 Build and run from Android Studio, or:
 
 ```bash
