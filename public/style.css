@@ -383,6 +383,14 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .link-url a:hover { color: var(--accent); }
 
+.site-title {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.25rem;
+  word-break: break-word;
+}
+
 .link-desc {
   font-size: 0.9rem;
   color: #475569;

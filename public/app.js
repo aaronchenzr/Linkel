@@ -155,6 +155,10 @@ function renderCard(link) {
     ? `<p class="link-desc">${escapeHtml(link.description)}</p>`
     : '';
 
+  const siteTitleHtml = link.site_title
+    ? `<p class="site-title">${escapeHtml(link.site_title)}</p>`
+    : '';
+
   return `
     <div class="link-card" data-id="${link.id}">
       <div class="link-dot"></div>
@@ -177,6 +181,7 @@ function renderCard(link) {
             ${escapeHtml(truncate(link.url, 80))}
           </a>
         </div>
+        ${siteTitleHtml}
         ${descHtml}
       </div>
     </div>
