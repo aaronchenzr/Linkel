@@ -51,6 +51,52 @@ cd android
 | `POST` | `/api/links` | Submit a link |
 | `DELETE` | `/api/links/:id` | Delete a link (body: `{ username }`) |
 
+### Pulling links
+
+Fetch links by sending a `GET` request to `/api/links`. The response is a JSON array of link objects.
+
+```bash
+# Fetch all links (newest first)
+curl http://localhost:3000/api/links
+```
+
+#### Query parameters
+
+| Parameter  | Default | Description                          |
+|------------|---------|--------------------------------------|
+| `order`    | `desc`  | Sort order: `desc` (newest) or `asc` (oldest) |
+| `username` | —       | Filter links by a specific username  |
+
+#### Examples
+
+```bash
+# Oldest first
+curl "http://localhost:3000/api/links?order=asc"
+
+# Only links from alice
+curl "http://localhost:3000/api/links?username=alice"
+
+# Combine both
+curl "http://localhost:3000/api/links?order=asc&username=alice"
+```
+
+#### Response
+
+```json
+[
+  {
+    "id": 1,
+    "username": "alice",
+    "title": "Example",
+    "url": "https://example.com",
+    "description": "Optional",
+    "created_at": "2026-02-22 12:00:00"
+  }
+]
+```
+
+An empty array `[]` is returned when no links match the query.
+
 ### POST body
 
 ```json
